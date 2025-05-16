@@ -262,10 +262,25 @@
                 collectedData.geoAccuracy = geoAccuracy;
                 collectedData.provider = provider;
             } catch (e) {
-                collectedData.ip = ip;
-                collectedData.geo = geo;
-                collectedData.geoAccuracy = geoAccuracy;
-                collectedData.provider = provider;
+                
+                try {
+                    let ipinfo = await fetch('https://api.ipify.org?format=json').then(r => r.json());
+                    ip = ipinfo.ip || '—';
+                    geo = (ipinfo.country_name || '') + (ipinfo.city ? ', ' + ipinfo.city : '');
+                    geoAccuracy = ipinfo.latitude && ipinfo.longitude ? `${ipinfo.latitude}, ${ipinfo.longitude}` : '—';
+                    provider = ipinfo.org || '—';
+                    geoCoords = ipinfo.latitude && ipinfo.longitude ? [ipinfo.latitude, ipinfo.longitude] : null;
+                    collectedData.ip = ip;
+                    collectedData.geo = geo;
+                    collectedData.geoAccuracy = geoAccuracy;
+                    collectedData.provider = provider;
+                }
+                catch (e) { 
+                    collectedData.ip = ip;
+                    collectedData.geo = geo;
+                    collectedData.geoAccuracy = geoAccuracy;
+                    collectedData.provider = provider;
+                }
             }
             document.getElementById('ip').textContent = ip;
             document.getElementById('geo').textContent = geo;
